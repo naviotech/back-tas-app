@@ -66,14 +66,14 @@ export class TaskController {
         return res.status(400).json({error: error.message})
       }
       task.name = req.body.name
-      task.description = req.body.descripcion
+      task.description = req.body.description
       await task.save()
       res.send("Tarea Actualizada")
       
       
     } catch (error) {
       console.error('Error al actualizar la tarea:', error);
-      res.status(500).json({ error: 'Error al actualizar la tarea' });
+      res.status(500).json({ error: error.message });
     }
   }
 
