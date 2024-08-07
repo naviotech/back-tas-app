@@ -22,3 +22,10 @@ routerAuth.post('/create-account',
   handleInputErrors,
   AuthController.createAccount
 )
+
+routerAuth.post("/confirm-account",
+  body("token")
+    .notEmpty().withMessage("El token es obligatorio"),
+  handleInputErrors,
+  AuthController.confirmAccount
+)
