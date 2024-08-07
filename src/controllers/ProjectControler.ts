@@ -76,7 +76,7 @@ export class ProjectController{
 
     } catch (error) {
       console.error('Error al eliminar proyecto:', error);
-      res.status(500).json({ error: 'Error al eliminar proyecto' });
+      res.status(500).json({ error: 'Error al eliminar proyecto' })
     }
     
   }
