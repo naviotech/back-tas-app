@@ -29,3 +29,12 @@ routerAuth.post("/confirm-account",
   handleInputErrors,
   AuthController.confirmAccount
 )
+
+routerAuth.post("/login",
+  body('email')
+    .isEmail().withMessage("Email no válido"),
+  body('password')
+    .notEmpty().withMessage("La contraseña es obligatoria"),
+  handleInputErrors,
+  AuthController.loginAccount
+)

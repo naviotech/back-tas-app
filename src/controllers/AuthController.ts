@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import User from '../models/User'
-import { hashPassword } from '../utils/auth'
+import { hashPassword, verifiedPassword } from '../utils/auth'
 import { generateToken } from '../utils/token'
 import Token from '../models/token'
 import { AuthEmail } from '../emails/AuthEmail'
@@ -54,6 +54,44 @@ export class AuthController {
     } catch (error) {
       console.error('Error al confirmar cuenta:', error);
       res.status(500).json({ error: 'Error al confirmar cuenta' });
+    }
+  }
+
+  static loginAccount = async(req: Request, res: Response)=>{
+    try {
+      const {email,password} = req.body
+      const user = await User.findOne({email})
+      if(!user){
+        const error = new Error('Email no válido')
+        return res.status(401).json({error: error.message})
+      }
+
+      if(!user.confirmed){
+        //Mandamos nuevo token
+        const token = new Token()
+        token.token = generateToken()
+        token.user = user.id
+        await token.save()
+
+        //send mail
+        AuthEmail.sendConfirmationEmail({email: user.email, token: token.token, name: user.name})
+
+        const error = new Error('Cuenta no confirmada, hemos enviado un email para confirmar tu cuenta')
+        return res.status(401).json({error: error.message})
+      }
+
+      // revisar la password
+      const passwordCorrect = await verifiedPassword(password,user.password)
+      if(!passwordCorrect){
+        const error = new Error('La contraseña no es correcta')
+        return res.status(401).json({error: error.message})
+      }
+      
+      res.send(`Bienvenido ${user.name}`)
+
+    } catch (error) {
+      console.error('Error al iniciar sesión', error);
+      res.status(500).json({ error: 'Error al iniciar sesión' })
     }
   }
 }
