@@ -10,7 +10,7 @@ routerAuth.post('/create-account',
     .notEmpty().withMessage("El nombre es obligatorio"),
   body('password')
     .isLength({min: 8}).withMessage("Contraseña mínima de ocho carácteres"),
-  body('repeat-password')
+  body('repeat_password')
     .custom((value, {req})=>{
       if(value !== req.body.password){
         throw new Error('Las contraseñas no coinciden')
@@ -37,4 +37,11 @@ routerAuth.post("/login",
     .notEmpty().withMessage("La contraseña es obligatoria"),
   handleInputErrors,
   AuthController.loginAccount
+)
+
+routerAuth.post("/new_token",
+  body('email')
+    .isEmail().withMessage("Email no válido"),
+  handleInputErrors,
+  AuthController.newToken
 )

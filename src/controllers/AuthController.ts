@@ -94,4 +94,37 @@ export class AuthController {
       res.status(500).json({ error: 'Error al iniciar sesión' })
     }
   }
+
+  static newToken = async(req: Request, res: Response)=>{
+    try {
+      const {email} = req.body
+      const user = await User.findOne({email})
+      if(!user){
+        const error = new Error('Email no válido')
+        return res.status(401).json({error: error.message})
+      }
+
+      if(user.confirmed){
+        const error = new Error('Cuenta ya confirmada')
+        return res.status(401).json({error: error.message})
+      }
+
+      
+      //Mandamos nuevo token
+      const token = new Token()
+      token.token = generateToken()
+      token.user = user.id
+      
+
+      //send mail
+      AuthEmail.sendConfirmationEmail({email: user.email, token: token.token, name: user.name})
+
+      await Promise.allSettled([user.save(), token.save()])
+      res.send('Revisa tu email y confirma tu cuenta')
+
+    } catch (error) {
+      console.error('Error al iniciar sesión', error);
+      res.status(500).json({ error: 'Error al iniciar sesión' })
+    }
+  }
 }

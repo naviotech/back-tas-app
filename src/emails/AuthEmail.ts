@@ -1,4 +1,7 @@
 import { transporter } from "../config/nodemailer"
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 type ConfirmationEmailProps = {
   email: string,
@@ -16,7 +19,7 @@ export class AuthEmail {
             <p>Codigo para confirmar cuenta: <strong>${token}</strong></>
             <p>"Este codigo es de un solo uso y vàlido durante 10 minutos</p>
             
-            <a href="">Confirmar Cuenta</a>`
+            <a href="${process.env.FRONTEND}/auth/confirm-account">Confirmar Cuenta</a>`
     })
   }
 }
